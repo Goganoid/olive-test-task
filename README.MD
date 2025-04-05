@@ -172,6 +172,7 @@ Response:
 ```
 
 3. Complete Multipart Upload:
+  
 This endpoint accepts a list of uploaded parts, their ETags, and uploadId. These parameters are used to finalize the upload
 ```http
 POST /api/upload/multipart/complete
