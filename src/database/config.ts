@@ -3,7 +3,6 @@ import { MediaMetadata } from '../entities/MediaMetadata.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
@@ -13,7 +12,8 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'meta_db',
   synchronize: false, // We'll use migrations instead
   logging: true,
+  migrationsRun: true,
   entities: [MediaMetadata],
-  migrations: ['dist/database/migrations/*.js'],
+  migrations: ['./dist/database/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
