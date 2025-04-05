@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { MediaMetadata } from '../entities/MediaMetadata.js';
+import { MediaMetadata } from '../entities/media-metadata.entity.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

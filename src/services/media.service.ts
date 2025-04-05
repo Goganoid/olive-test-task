@@ -1,7 +1,7 @@
 import { ApiError } from '../server/types.js';
 import { S3Service } from './s3.service.js';
 import { AppDataSource } from '../database/config.js';
-import { MediaMetadata } from '../entities/MediaMetadata.js';
+import { MediaMetadata } from '../entities/media-metadata.entity.js';
 import { v4 } from 'uuid';
 import { FileDto } from '../dto/file.dto.js';
 import { InitializedFileDto } from '../dto/initialized-file.dto.js';
