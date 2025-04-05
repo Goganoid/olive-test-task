@@ -14,7 +14,7 @@ const initializeDatabase = async () => {
     await AppDataSource.runMigrations();
     logger.log('Migrations executed successfully');
   } catch (error) {
-    console.error('Error during database initialization:', error);
+    logger.error('Error during database initialization:', error);
     process.exit(1);
   }
 };
