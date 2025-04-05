@@ -3,20 +3,20 @@ import { S3Service } from './s3.service.js';
 import { AppDataSource } from '../database/config.js';
 import { MediaMetadata } from '../entities/MediaMetadata.js';
 import { v4 } from 'uuid';
+import { FileDto } from '../dto/file.dto.js';
+import { InitializedFileDto } from '../dto/initialized-file.dto.js';
 
 export class MediaService {
   private readonly mediaRepository = AppDataSource.getRepository(MediaMetadata);
 
   constructor(private readonly s3Service: S3Service) {}
 
-  // creates a new key for a file
-  async initFile(type: string) {
+  async initFile(type: string): Promise<InitializedFileDto> {
     const key = `media/${v4()}.${type}`;
     const { id } = await this.mediaRepository.save({ key, type, created: false });
     return { id, key };
   }
 
-  // finalizes uploaded file in database
   async finalizeFile(id: string) {
     const existingRecord = await this.mediaRepository.findOne({ where: { id } });
     if (!existingRecord) {
@@ -39,7 +39,7 @@ export class MediaService {
     });
   }
 
-  async readFile(id: string) {
+  async readFile(id: string): Promise<FileDto> {
     const record = await this.mediaRepository.findOne({ where: { id } });
     if (!record) {
       throw new ApiError('File not found in database', 404);
@@ -60,7 +60,7 @@ export class MediaService {
     };
   }
 
-  async deleteFile(id: string): Promise<void> {
+  async deleteFile(id: string) {
     const record = await this.mediaRepository.findOne({ where: { id } });
     if (!record) {
       throw new ApiError('File not found in database', 404);

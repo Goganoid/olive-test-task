@@ -5,8 +5,10 @@ import { S3Service } from '../services/s3.service.js';
 import { UploadService } from '../services/upload.service.js';
 
 const mediaTypeSchema = z.enum(['jpg', 'png', 'gif', 'mp4', 'mov', 'avi', 'mkv', 'webm']);
+const idSchema = z.string().nonempty('id is required');
 
 export const getMediaRoutes = (): Route<any, any>[] => {
+  // IMPROVEMENT: use DI
   const s3Service = new S3Service();
   const uploadService = new UploadService(s3Service);
   const mediaService = new MediaService(s3Service);
@@ -46,7 +48,7 @@ export const getMediaRoutes = (): Route<any, any>[] => {
       },
       {
         params: z.object({
-          id: z.string().nonempty('id is required'),
+          id: idSchema,
         }),
       },
     ),
@@ -65,7 +67,7 @@ export const getMediaRoutes = (): Route<any, any>[] => {
       },
       {
         params: z.object({
-          id: z.string().nonempty('id is required'),
+          id: idSchema,
         }),
       },
     ),
@@ -85,7 +87,7 @@ export const getMediaRoutes = (): Route<any, any>[] => {
       },
       {
         params: z.object({
-          id: z.string().nonempty('id is required'),
+          id: idSchema,
         }),
       },
     ),
