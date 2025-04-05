@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      meta_db:
+        condition: service_started
+    volumes:
+      - ./.env:/app/.env
+
+  meta_db:
+    image: postgres:15
+    ports:
+      - "5432:5432" 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: meta_db
+    volumes:
+      - meta_data:/var/lib/postgresql/data
+
+volumes:
+  meta_data:

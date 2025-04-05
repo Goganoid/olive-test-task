@@ -1,47 +1,45 @@
-import { createServer } from './server/server';
-import { Route, RouteConfig } from './server/types';
-import { z } from 'zod';
-const routeConfig: RouteConfig = {
-  routes: [
-    new Route('/api/hello', 'GET', async () => {
-      return {
-        statusCode: 200,
-        body: {
-          message: 'Hello, world!',
-        },
-      };
-    }),
-    new Route(
-      '/api/hello/:name',
-      'GET',
-      async (req) => {
-        return {
-          statusCode: 200,
-          body: {
-            message: `Hello ${req.params.name}!`,
-          },
-        };
-      },
-      {
-        params: z.object({
-          name: z.string(),
-        }),
-      },
-    ),
-  ],
+import dotenv from 'dotenv';
+import 'reflect-metadata';
+dotenv.config();
+
+import { AppDataSource } from './database/config.js';
+import { getMediaRoutes } from './routes/media.routes.js';
+import { createServer, RouteConfig } from './server/index.js';
+import { logger } from './utils/logger.js';
+
+const initializeDatabase = async () => {
+  try {
+    await AppDataSource.initialize();
+    logger.log('Database connection established');
+    await AppDataSource.runMigrations();
+    logger.log('Migrations executed successfully');
+  } catch (error) {
+    console.error('Error during database initialization:', error);
+    process.exit(1);
+  }
 };
 
-// Create and start the server
-const server = createServer(routeConfig);
-const PORT = process.env.PORT || 3000;
+const routeConfig: RouteConfig = {
+  routes: [...getMediaRoutes()],
+};
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Initialize database and start server
+initializeDatabase().then(() => {
+  const server = createServer(routeConfig);
+  const PORT = process.env.PORT || 3000;
 
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received. Shutting down...');
-  server.close(() => {
-    console.log('Server closed.');
+  server.listen(PORT, () => {
+    logger.log(`Server running on port ${PORT}`);
+  });
+
+  process.on('SIGINT', () => {
+    logger.log('SIGINT signal received. Shutting down...');
+    server.close(() => {
+      logger.log('Server closed.');
+      AppDataSource.destroy().then(() => {
+        logger.log('Database connection closed.');
+        process.exit(0);
+      });
+    });
   });
 });
